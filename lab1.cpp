@@ -1,6 +1,20 @@
+//Designed to see if you can draw things.
+
+//Create and draw three different 2D objects.
+//Examples are star, points (at least 1500), square, triangle, trapezoid, lines (at least 6), any kind of polygon, and etc. Stick with 2D.
+//Use mouse controls: left click cycles through drawing the different objects and right click to exit the program.
+
+//Use different GLenum modes aka OpenGL primitives along with GL_QUADS and etc.
+
 //Lab1
 
 //INCLUDES
+#include "initShaders.h"
+#include "vec.h"
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+int counter=0;
 
 //initialize the polygons
 void init(){
