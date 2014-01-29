@@ -130,17 +130,17 @@ void triangle1(){//Triangle = shape 2
 void drawscene(){
   switch(counter%3){//easy way to switch throw functions
     case 0:
-      cout << " points ";
+      //cout << " points ";
       glutDisplayFunc(triangle1);
       glutPostRedisplay();//sets flags for opengl to redraw the display
       break;
     case 1:
-      cout << " triangle ";
+      //cout << " triangle ";
       glutDisplayFunc(points);
       glutPostRedisplay();
       break;
     case 2:
-      cout << " triangle ";
+      //cout << " triangle ";
       glutDisplayFunc(triangle1);
       glutPostRedisplay();
       break;
@@ -153,7 +153,7 @@ void mousepress(int button, int state, int x, int y){
 		exit(0);//exit the program
 	else if(button==GLUT_LEFT_BUTTON && state==GLUT_DOWN){
 		counter++;
-		cout << " leftclicked " << counter%3;
+		//cout << " leftclicked " << counter%3;
 		drawscene();
 	}//left click changes the shape color
 		
