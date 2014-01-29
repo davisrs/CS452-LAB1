@@ -26,10 +26,21 @@ int counter=0; //used for cycling through the shapes
 GLuint vaoID, vboID;// these are the buffers that are going to be linked too
 
 //vertices for shape 2 = triangle
-GLfloat vertexarray[]={0.5f,-0.5f,0.0f,0.0f,0.5f,0.0f,-0.5f,-0.5f,0.0f};// vertices that are drawn x,y,z ...
+GLfloat vertexarray[]={0.5f,-0.5f,0.0f,
+			     0.0f, 0.5f,0.0f,
+			    -0.5f,-0.5f,0.0f};// vertices that are drawn x,y,z ...
 //indices of the triangle (shape 2)
 GLubyte indices[3]={0,1,2};
 
+//vertices for shape 3 = polygon
+GLfloat vertexarray3[]={0.0f, 0.0f, 0.0f,
+			      0.5f, 0.0f, 0.0f,
+			      0.5f, 0.5f, 0.0f,
+			      0.5f, -0.3f, 0.0f,
+			      0.0f, 0.5f, 0.0f,
+			      0.5f, 0.7f, 0.0f};// vertices that are drawn x,y,z ...
+//indices of the polygon (shape 3)
+GLubyte indices3[6]={0,1,2,3,4,5};
 
 //initialize the polygons
 
@@ -153,6 +164,32 @@ void triangle2(){
   glFlush();//make sure the processes finish
 }
 
+void shape3(){
+  glClear(GL_COLOR_BUFFER_BIT);//clear screen
+
+  glGenVertexArrays(1, &vaoID);//generates object name for Vertex Array Objects
+  glBindVertexArray(vaoID);//bind the object to the array
+
+  glGenBuffers(1, &vboID);//generates object name for the Vertex Buffer Object
+  glBindBuffer(GL_ARRAY_BUFFER, vboID);//bind the object to the array
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertexarray3), vertexarray3, GL_STATIC_DRAW);//allocates the memory of the vertices
+
+ ShaderInfo shaders[]={//create the shader specified by my initshaders input
+  { GL_VERTEX_SHADER , "vertexshader2.glsl"} ,
+  { GL_FRAGMENT_SHADER , "fragmentshader2.glsl"},
+  { GL_NONE , NULL} 
+  };
+
+  initShaders(shaders);//creates shaders
+  	  	
+  glEnableVertexAttribArray(0);//enables the vertex attribute index 
+  glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);//specified the start the vertice array used to the draw
+  
+  glDrawElements(GL_POLYGON, 6, GL_UNSIGNED_BYTE, indices3);//draws object based on indices of the polygon
+  glDisableVertexAttribArray(0);
+  glFlush();//make sure the processes finish
+}
+
 void drawscene(){
   switch(counter%3){//easy way to switch throw functions
     case 0:
@@ -166,8 +203,8 @@ void drawscene(){
       glutPostRedisplay();
       break;
     case 2:
-      //cout << " triangle ";
-      glutDisplayFunc(triangle2);
+      //cout << " polygon ";
+      glutDisplayFunc(shape3);
       glutPostRedisplay();
       break;
   }
