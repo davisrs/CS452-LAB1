@@ -19,14 +19,24 @@
 #include <ctime>
 using namespace std;
 
-const int numpoints=4000; //4000 dots
-//int counter=0; //I have no idea (Hint:from shapes.cpp)
+const int numpoints=4000; //4000 dots = shape 1
+int counter=0; //used for cycling through the shapes
 
+//vertexIDs
 GLuint vaoID, vboID;// these are the buffers that are going to be linked too
 
+//vertices for shape 2 = triangle
+GLfloat vertexarray[]={0.5f,-0.5f,0.0f,0.0f,0.5f,0.0f,-0.5f,-0.5f,0.0f};// vertices that are drawn x,y,z ...
+//indices of the triangle (shape 2)
+GLubyte indices[3]={0,1,2};
+
+
 //initialize the polygons
-void init(){
-	//Generate random points for the dots
+
+//Draw Functions
+
+void points(){//4000 points = shape 1
+	glClear(GL_COLOR_BUFFER_BIT);//clear screen
 	
 	vec2 points[numpoints];
 	float k;
@@ -70,14 +80,6 @@ void init(){
 	glBindVertexArray(vaoID);
 	glBindBuffer(GL_ARRAY_BUFFER,vboID);
 	
-	/*
-	glGenVertexArrays(1,&vaoID);//Tried doing it like dots.cpp did - didn't help'
-	glBindVertexArray(vaoID);
-	
-	glGenBuffers(1,&vboID);
-	glBindBuffer(GL_ARRAY_BUFFER,vboID);
-	*/
-	
 	//allocate buffer and fill with vertice data
 	glBufferData(GL_ARRAY_BUFFER,sizeof(points),points,GL_STATIC_DRAW);  
 	
@@ -96,26 +98,76 @@ void init(){
 	//setup vertex pointers
 	glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,(void*)0);
         
-}
-
-//Draw Functions
-void points(){
-	glClear(GL_COLOR_BUFFER_BIT);//clear screen
 	glDrawArrays(GL_POINTS,0,numpoints);//draws the points
 	glFlush();//make sure the processes finish
+}
+
+void triangle1(){//Triangle = shape 2
+  glClear(GL_COLOR_BUFFER_BIT);//clears the screen
+  
+  glGenVertexArrays(1, &vaoID);//generates object name for Vertex Array Objects
+  glBindVertexArray(vaoID);//bind the object to the array
+
+  glGenBuffers(1, &vboID);//generates object name for the Vertex Buffer Object
+  glBindBuffer(GL_ARRAY_BUFFER, vboID);//bind the object to the array
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertexarray), vertexarray, GL_STATIC_DRAW);//allocates the memory of the vertices
+
+ ShaderInfo shaders[]={//create the shader specified by my initshaders 
+  { GL_VERTEX_SHADER , "vertexshader1.glsl"} ,
+  { GL_FRAGMENT_SHADER , "fragmentshader1.glsl"},
+  { GL_NONE , NULL} 
+  };
+
+  initShaders(shaders);//creates shaders
+  
+  glEnableVertexAttribArray(0);//enables the vertex attribute index 
+  glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);//specified the start the vertice array used to the draw
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);//draws array
+  glFlush();//makes sure the prcesses finish
+}
+
+void drawscene(){
+  switch(counter%3){//easy way to switch throw functions
+    case 0:
+      cout << " points ";
+      glutDisplayFunc(triangle1);
+      glutPostRedisplay();//sets flags for opengl to redraw the display
+      break;
+    case 1:
+      cout << " triangle ";
+      glutDisplayFunc(points);
+      glutPostRedisplay();
+      break;
+    case 2:
+      cout << " triangle ";
+      glutDisplayFunc(triangle1);
+      glutPostRedisplay();
+      break;
+  }
 }
 
 //mouse control function
 void mousepress(int button, int state, int x, int y){
 	if(button==GLUT_RIGHT_BUTTON && state==GLUT_DOWN)//If right click
 		exit(0);//exit the program
+	else if(button==GLUT_LEFT_BUTTON && state==GLUT_DOWN){
+		counter++;
+		cout << " leftclicked " << counter%3;
+		drawscene();
+	}//left click changes the shape color
+		
+}
+
+void idle(void){
+  glutPostRedisplay();
 }
 
 int main(int argc, char **argv){
         
 	//intialize the window adn contex mangament library your using
 	glutInit(&argc,argv);
-	glutCreateWindow("dots");
+	glutCreateWindow("Lab 1");
         
       //specify with version of GL you are using
       glewExperimental=GL_TRUE;
@@ -133,17 +185,15 @@ int main(int argc, char **argv){
   version=glGetString(GL_VERSION);
   fprintf(stderr,"Opengl version %s\n", version);
         
-      //initialize polygons
-      init();
-        
-      //draw polygons
-      glutDisplayFunc(points);
               
       //mouse controls
       glutMouseFunc(mousepress);
-      
+              
+      //draw polygons
+      glutDisplayFunc(drawscene);
+
       //glut main loop
-      glutMainLoop();
+      glutMainLoop();//sets opengl state in a neverending loop
         
       return 0;
 }
